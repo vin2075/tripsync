@@ -1,0 +1,9 @@
+package com.tripsync.config;
+import org.springframework.beans.factory.annotation.Value; import org.springframework.context.annotation.Bean; import org.springframework.context.annotation.Configuration;
+import software.amazon.awssdk.auth.credentials.*; import software.amazon.awssdk.regions.Region; import software.amazon.awssdk.services.s3.S3Client; import software.amazon.awssdk.services.s3.S3Configuration; import software.amazon.awssdk.services.s3.presigner.S3Presigner; import java.net.URI;
+@Configuration public class AwsConfig {
+ @Bean S3Client s3Client(@Value("${app.s3.region}") String region,@Value("${app.s3.endpoint:}") String endpoint,@Value("${app.s3.access-key:}") String key,@Value("${app.s3.secret-key:}") String secret){
+  var b=S3Client.builder().region(Region.of(region)); if(endpoint!=null&&!endpoint.isBlank()){b.endpointOverride(URI.create(endpoint)).forcePathStyle(true).serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build()); if(key!=null&&!key.isBlank())b.credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(key,secret)));} else b.credentialsProvider(DefaultCredentialsProvider.create()); return b.build(); }
+ @Bean S3Presigner s3Presigner(@Value("${app.s3.region}") String region,@Value("${app.s3.endpoint:}") String endpoint,@Value("${app.s3.access-key:}") String key,@Value("${app.s3.secret-key:}") String secret){
+  var b=S3Presigner.builder().region(Region.of(region)); if(endpoint!=null&&!endpoint.isBlank()){b.endpointOverride(URI.create(endpoint)).serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build()); if(key!=null&&!key.isBlank())b.credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(key,secret)));} else b.credentialsProvider(DefaultCredentialsProvider.create()); return b.build(); }
+}

@@ -1,0 +1,1 @@
+package com.tripsync.repository;import com.tripsync.entity.GroupInvitation;import org.springframework.data.jpa.repository.JpaRepository;import java.util.*;public interface GroupInvitationRepository extends JpaRepository<GroupInvitation,UUID>{Optional<GroupInvitation> findByToken(String token);}
